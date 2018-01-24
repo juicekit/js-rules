@@ -9,7 +9,7 @@ export class Rules {
         this.rules.push(rule);
     }
 
-    check(facts: Facts): Promise<Facts> {
+    verify(facts: Facts): Promise<Facts> {
         let runner = new FastRunner(this.rules);
 
         return runner.execute((rule) => {
@@ -26,7 +26,6 @@ export class Rules {
             
             return Promise.reject(rule);
         }).then(() => {
-
             return facts;
         });
     }
