@@ -15,7 +15,9 @@ export class Rules {
         return runner.execute((rule) => {
             const conditionEvaluation = rule.condition(facts);
             if (conditionEvaluation instanceof Promise) {
-                return conditionEvaluation;
+                return conditionEvaluation.catch(() => {
+                    Promise.reject(rule);
+                });
             }
 
             if (conditionEvaluation) {
