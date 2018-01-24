@@ -16,7 +16,7 @@ export class Rules {
             const conditionEvaluation = rule.condition(facts);
             if (conditionEvaluation instanceof Promise) {
                 return conditionEvaluation.catch(() => {
-                    Promise.reject(rule);
+                    return Promise.reject(rule);
                 });
             }
 
