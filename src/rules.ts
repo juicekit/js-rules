@@ -1,6 +1,7 @@
-import { Rule } from "./rule";
-import { Facts } from "./facts";
-import { FastRunner } from "@juicekit/fastrunner";
+import { Rule } from './rule';
+import { Facts } from './facts';
+import { FastRunner } from '@juicekit/fastrunner';
+import { Observable } from 'rxjs/Observable';
 
 export class Rules {
     private rules: Rule[] = [];
@@ -9,24 +10,11 @@ export class Rules {
         this.rules.push(rule);
     }
 
-    verify(facts: Facts): Promise<Facts> {
+    verify(facts: Facts): Observable<Rule> {
         let runner = new FastRunner(this.rules);
 
         return runner.execute((rule) => {
-            const conditionEvaluation = rule.condition(facts);
-            if (conditionEvaluation instanceof Promise) {
-                return conditionEvaluation.catch(() => {
-                    return Promise.reject(rule);
-                });
-            }
-
-            if (conditionEvaluation) {
-                return Promise.resolve();
-            }
-            
-            return Promise.reject(rule);
-        }).then(() => {
-            return facts;
+            return rule.condition(facts);
         });
     }
 

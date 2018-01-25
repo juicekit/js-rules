@@ -1,13 +1,18 @@
 import { expect } from 'chai';
 import { Facts } from './facts';
 import { Rules } from './rules';
+import { spy } from 'sinon';
 
 describe('Rules', () => {
     it('should pass if there are no rules', (done) => {
         const norules = new Rules();
-        norules.verify(new Facts()).then(() => {
+        norules.verify(new Facts()).subscribe(() => {
+            done(new Error('has rules'))
+        }, (error) => {
+            done(error);
+        }, () => {
             done();
-        }).catch(done);
+        });
     });
 
     it('should return all rules (0 rules)', () => {
@@ -65,9 +70,12 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, error => done(error), () => {
+                expect(ruleCallback.callCount).to.equal(1);
                 done();
-            }).catch(done);
+            });
         });
 
         it('should not pass if a rule is not met', (done) => {
@@ -80,10 +88,10 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 16);
 
-            adult.verify(john).then(() => {
+            adult.verify(john).subscribe(() => {
                 done(new Error('is an adult'));
-            }).catch((e) => {
-                expect(e.Name).to.equal('Over18')
+            }, (error) => {
+                expect(error.Name).to.equal('Over18');
                 done();
             });
         });
@@ -99,9 +107,15 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, (error) => {
+                done(error)
+            }, () => {
+                expect(ruleCallback.callCount).to.equal(2);
                 done();
-            }).catch(done);
+            });
         });
 
         it('should pass if all rules (6 rules) have been met', (done) => {
@@ -109,7 +123,7 @@ describe('Rules', () => {
             adult.register(adultRule);
             adult.register(maleRule);
             adult.register({
-                Name: 'FirstNameLongerThan4Chars',
+                Name: 'FirstNameLongerThan2Chars',
                 Description: '',
                 condition: (facts: Facts) => {
                     return facts.get('firstName').length > 2;
@@ -143,9 +157,12 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, error => done(error), () => {
+                expect(ruleCallback.callCount).to.equal(6)
                 done();
-            }).catch(done);
+            });
         });
 
         it('should not pass if at least 1 rule (out of 6 rules) has been met', (done) => {
@@ -153,7 +170,7 @@ describe('Rules', () => {
             adult.register(adultRule);
             adult.register(maleRule);
             adult.register({
-                Name: 'FirstNameLongerThan4Chars',
+                Name: 'FirstNameLongerThan2Chars',
                 Description: '',
                 condition: (facts: Facts) => {
                     return facts.get('firstName').length > 2;
@@ -187,10 +204,10 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+            adult.verify(john).subscribe(() => {
                 done(new Error('user info is valid'));
-            }).catch((rule) => {
-                expect(rule.Name).to.equal('FirstNameLongerThan4Chars');
+            }, (rule) => {
+                expect(rule.Name).to.equal('FirstNameLongerThan2Chars');
                 done();
             });
         });
@@ -236,9 +253,13 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, error => done(error), () => {
+                expect(ruleCallback.callCount).to.equal(1);
                 done();
-            }).catch(done);
+            });
         });
 
         it('should not pass if a rule is not met', (done) => {
@@ -251,10 +272,10 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 16);
 
-            adult.verify(john).then(() => {
+            adult.verify(john).subscribe(() => {
                 done(new Error('is an adult'));
-            }).catch((e) => {
-                expect(e.Name).to.equal('Over18')
+            },(rule) => {
+                expect(rule.Name).to.equal('Over18')
                 done();
             });
         });
@@ -270,9 +291,12 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, error => done(error), () => {
+                expect(ruleCallback.callCount).to.equal(2);
                 done();
-            }).catch(done);
+            });
         });
 
         it('should pass if all rules (6 rules) have been met', (done) => {
@@ -280,7 +304,7 @@ describe('Rules', () => {
             adult.register(adultRule);
             adult.register(maleRule);
             adult.register({
-                Name: 'FirstNameLongerThan4Chars',
+                Name: 'FirstNameLongerThan2Chars',
                 Description: '',
                 condition: (facts: Facts): Promise<any> => {
                     return new Promise((resolve, reject) => {
@@ -339,9 +363,12 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, error => done(error), () => {
+                expect(ruleCallback.callCount).to.equal(6);
                 done();
-            }).catch(done);
+            });
         });
 
         it('should not pass if at least 1 rule (out of 6 rules) has been met', (done) => {
@@ -349,7 +376,7 @@ describe('Rules', () => {
             adult.register(adultRule);
             adult.register(maleRule);
             adult.register({
-                Name: 'FirstNameLongerThan4Chars',
+                Name: 'FirstNameLongerThan2Chars',
                 Description: '',
                 condition: (facts: Facts): Promise<any> => {
                     return new Promise((resolve, reject) => {
@@ -408,11 +435,13 @@ describe('Rules', () => {
             john.set('gender', 'Male');
             john.set('age', 26);
 
-            adult.verify(john).then(() => {
-                done(new Error('user info is valid'));
-            }).catch((rule) => {
-                expect(rule.Name).to.equal('FirstNameLongerThan4Chars');
+            const ruleCallback = spy();
+
+            adult.verify(john).subscribe(ruleCallback, (rule) => {
+                expect(rule.Name).to.equal('FirstNameLongerThan2Chars');
                 done();
+            }, () => {
+                done(new Error('completed without errors'));
             });
         });
     });

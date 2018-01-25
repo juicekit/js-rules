@@ -25,11 +25,13 @@
   "devDependencies": {
     "@types/chai": "^4.1.2",
     "@types/mocha": "^2.2.47",
+    "@types/sinon": "^4.1.3",
     "chai": "^4.1.2",
     "gulp": "^3.9.1",
     "gulp-mocha": "^5.0.0",
     "mocha": "^5.0.0",
     "nyc": "^11.4.1",
+    "sinon": "^4.2.1",
     "ts-node": "^4.1.0",
     "typescript": "^2.6.2"
   },
@@ -49,6 +51,6 @@
     "all": true
   },
   "dependencies": {
-    "@juicekit/fastrunner": "^1.0.1"
+    "@juicekit/fastrunner": "^3.0.0"
   }
 }

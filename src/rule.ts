@@ -1,4 +1,4 @@
-import { Facts } from "./facts";
+import { Facts } from './facts';
 
 export class Rule {
     get Name(): string {
